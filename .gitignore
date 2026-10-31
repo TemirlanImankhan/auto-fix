@@ -4,6 +4,8 @@ node_modules/
 .tanstack/
 dist/
 coverage/
+screenshots/
+.node_modules.lock
 
 # Local secrets and environment files
 .env
