@@ -1,0 +1,20 @@
+# Dependencies and generated builds
+node_modules/
+.vercel/
+.tanstack/
+dist/
+coverage/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Grok Builder workspace internals; retain the non-secret app feature flags
+.grok/*
+!.grok/app-env.json
+
+# Local logs and editor/OS files
+*.log
+.DS_Store
+Thumbs.db

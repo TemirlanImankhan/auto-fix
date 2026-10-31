@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratory Work No. 1 — AutoFix AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1a2b4a;
+      --accent: #1b4f72;
+      --gold: #b87324;
+      --paper: #fbf8f1;
+      --ink: #1c1c1c;
+      --muted: #5c6570;
+      --line: #c5d0dc;
+      --ok: #1b7a3a;
+      --no: #a32d2d;
+      --part: #b47324;
+      --header: #1b4f72;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Libre Baskerville", "Liberation Serif", "Times New Roman", serif;
+      background: #dfe6ee;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 18px;
+      background: var(--navy);
+      color: #fff;
+      font-family: "Source Sans 3", sans-serif;
+    }
+    .toolbar h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: .02em; }
+    .toolbar .sub { opacity: .75; font-weight: 400; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fff; color: var(--navy);
+      border: 0; border-radius: 6px;
+      padding: 8px 12px; font-size: 13px; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      font-family: "Source Sans 3", sans-serif;
+    }
+    .btn.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35); }
+    .btn:hover { filter: brightness(1.08); }
+
+    .wrap { max-width: 920px; margin: 24px auto 64px; padding: 0 14px; }
+    .paper {
+      background: var(--paper);
+      box-shadow: 0 18px 50px rgba(26,43,74,.18);
+      padding: 48px 56px 72px;
+      border: 1px solid #e6dfd0;
+    }
+    .kicker {
+      text-align: center; color: var(--accent);
+      font-family: "Source Sans 3", sans-serif;
+      font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+      font-weight: 700;
+    }
+    .title-block { text-align: center; margin: 8px 0 28px; }
+    .title-block h2 {
+      font-size: 26px; color: var(--navy); margin: 8px 0 6px; line-height: 1.25;
+    }
+    .title-block h3 {
+      font-size: 16px; color: var(--accent); font-weight: 400; font-style: italic; margin: 0 0 16px;
+    }
+    .topic {
+      max-width: 640px; margin: 0 auto;
+      font-size: 15px; font-weight: 700; color: var(--ink);
+    }
+    .meta {
+      margin-top: 18px; font-family: "Source Sans 3", sans-serif;
+      font-size: 13px; color: var(--muted);
+    }
+    h2.sec {
+      font-size: 16.5px; color: var(--navy); text-align: center;
+      margin: 32px 0 12px; letter-spacing: .01em;
+    }
+    h3.sub {
+      font-size: 15px; color: var(--accent); margin: 20px 0 8px;
+    }
+    p { margin: 0 0 10px; text-align: justify; font-size: 14.5px; }
+    p.indent { text-indent: 1.25em; }
+    ul.methods { margin: 6px 0 14px 1.2em; padding: 0; }
+    ul.methods li { margin: 0 0 6px; font-size: 14.5px; }
+    .caption {
+      text-align: center; font-style: italic; font-weight: 700;
+      color: var(--accent); font-size: 13.5px; margin: 18px 0 8px;
+    }
+    .note {
+      font-size: 12px; font-style: italic; color: #444; margin: 6px 0 16px;
+    }
+    table {
+      width: 100%; border-collapse: collapse; margin: 0 0 8px;
+      font-size: 12px; background: #fff;
+    }
+    th, td {
+      border: 1px solid #8aa0b5;
+      padding: 7px 8px;
+      vertical-align: top;
+    }
+    th {
+      background: var(--header); color: #fff; font-family: "Source Sans 3", sans-serif;
+      font-weight: 700; text-align: center; font-size: 11.5px;
+    }
+    td { font-size: 12px; }
+    tr:nth-child(even) td { background: #f4f7fa; }
+    td.el { font-weight: 700; width: 24%; }
+    .center { text-align: center; }
+    .plus { color: var(--ok); font-weight: 700; text-align: center; }
+    .minus { color: var(--no); font-weight: 700; text-align: center; }
+    .part { color: var(--part); font-weight: 700; text-align: center; }
+    ol.refs { padding-left: 1.4em; }
+    ol.refs li { margin: 0 0 8px; font-size: 13px; text-align: justify; }
+    a { color: var(--accent); }
+    .toc {
+      background: #fff; border: 1px solid var(--line); padding: 14px 18px 8px; margin: 0 0 22px;
+      font-family: "Source Sans 3", sans-serif;
+    }
+    .toc h4 { margin: 0 0 8px; color: var(--navy); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .toc a { display: block; text-decoration: none; color: var(--accent); font-size: 13.5px; padding: 3px 0; }
+    .toc a:hover { text-decoration: underline; }
+    .rule { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
+
+    @media (max-width: 720px) {
+      .paper { padding: 22px 16px 40px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+      table { font-size: 11px; display: block; overflow-x: auto; }
+    }
+    @media print {
+      .toolbar { display: none; }
+      body { background: #fff; }
+      .wrap { margin: 0; max-width: none; padding: 0; }
+      .paper { box-shadow: none; border: 0; padding: 0; }
+      a { color: inherit; text-decoration: none; }
+      .toc { break-after: avoid; padding: 8px 12px 4px; margin-bottom: 12px; }
+      .toc a { padding: 1px 0; font-size: 12px; }
+      p { font-size: 12.2px; margin-bottom: 7px; line-height: 1.42; }
+      h2.sec { font-size: 13.5px; margin: 14px 0 6px; }
+      h3.sub { font-size: 12.5px; margin: 10px 0 4px; }
+      table { font-size: 9px; }
+      th, td { padding: 4px 5px; }
+      .caption { font-size: 11.5px; margin: 10px 0 4px; }
+      .note { font-size: 10.5px; margin-bottom: 8px; }
+      ul.methods li { font-size: 12.2px; margin-bottom: 3px; }
+      ol.refs li { font-size: 11px; margin-bottom: 5px; }
+      .title-block h2 { font-size: 20px; }
+      .title-block { margin-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>Laboratory Work No. 1 <span class="sub">· Review of the subject area · AutoFix AI</span></h1>
+    <div class="actions">
+      <a class="btn" href="./Lab1_AutoFix_AI.docx" download>Download Word (.docx)</a>
+      <a class="btn" href="./Lab1_AutoFix_AI.pdf" download>Download PDF</a>
+      <button class="btn ghost" type="button" onclick="window.print()">Print</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <article class="paper">
+      <div class="kicker">Ministry of Science and Higher Education</div>
+      <div class="title-block">
+        <h2>Laboratory Work No. 1</h2>
+        <h3>Review and Analysis of the Subject Area<br/>of the Research (Development)</h3>
+        <p class="topic">Development of an intelligent web-based information system for preliminary diagnosis and prediction of automobile faults using machine learning methods (AutoFix AI)</p>
+        <div class="meta">Field: automotive service · Direction: Machine Learning / Web Development / Data Analysis · 2026</div>
+      </div>
+
+      <div class="toc">
+        <h4>Contents</h4>
+        <a href="#aim">1. Aim of the work</a>
+        <a href="#t1">2. Task 1. Selection of the research topic</a>
+        <a href="#t2">3. Task 2. Description of the subject area</a>
+        <a href="#t3">4. Task 3. Review of existing analogues</a>
+        <a href="#t4">5. Task 4. Classification of the analogues</a>
+        <a href="#t5">6. Task 5. Comparative analysis</a>
+        <a href="#t6">7. Task 6. Conclusion</a>
+        <a href="#ref">8. List of sources used</a>
+      </div>
+
+      <h2 class="sec" id="aim">1. Aim of the Work</h2>
+      <p class="indent">The aim of the laboratory work is to study the subject area of the selected research, identify its main elements and the existing practical problem, and apply the methods of analysis, comparison, and classification to examine existing analogous solutions.</p>
+      <p class="indent">In accordance with the methodological guidelines, a subject area is understood as a part of the real world studied within a particular research or development project. It includes objects, processes, participants, data, existing solutions, and problems. A scientific or practical problem is a task for which a solution is unavailable, not fully developed, or characterised by essential limitations.</p>
+      <p><strong>The following research methods are applied in this work:</strong></p>
+      <ul class="methods">
+        <li><em>analysis</em> — dividing the subject area into separate elements (vehicles, symptoms, faults, users, data, information systems) and examining them individually;</li>
+        <li><em>synthesis</em> — combining the obtained information into a comprehensive description of preliminary vehicle diagnosis as an intelligent information process;</li>
+        <li><em>comparison</em> — identifying similarities and differences between five existing analogous solutions;</li>
+        <li><em>classification</em> — grouping the selected analogues according to origin, target users, platform, and diagnostic approach.</li>
+      </ul>
+
+      <h2 class="sec" id="t1">2. Task 1. Selection of the Research Topic</h2>
+      <p class="indent">The preliminary topic of the diploma (research) project is formulated as follows:</p>
+      <p class="topic" style="margin:12px auto 14px;">Development of an intelligent web-based information system for preliminary diagnosis and prediction of automobile faults using machine learning methods (AutoFix AI).</p>
+      <p class="indent">The topic is related to the investigation and development of an information system and a software product in the field of automotive service. It corresponds to item 30 of the recommended topic list (“Information system for vehicle maintenance and service management”) and extends it with a research component: experimental comparison of machine-learning algorithms for multi-class classification of probable vehicle faults.</p>
+      <p class="indent">The project type is a research software project. The subject area is automotive service and artificial intelligence. The main technologies planned for the subsequent stages are Python, machine learning libraries, Django REST Framework, React, and PostgreSQL. The practical goal is to develop a web system that uses a trained model to provide a preliminary estimate of the most probable fault on the basis of vehicle characteristics and user-described symptoms. The system is not intended to replace professional mechanical diagnosis; it provides a prior assessment and a recommendation to visit a service station.</p>
+
+      <h2 class="sec" id="t2">3. Task 2. Description of the Subject Area</h2>
+      <p class="indent">The subject area of the research is the process of preliminary diagnosis of the technical condition of passenger cars. In real operation a driver usually observes only a limited set of signs: a difficult engine start, vibration, noise, overheating, increased fuel consumption, or an illuminated Check Engine indicator. The same sign may be produced by several systems. For example, a difficult start may be caused by the battery, spark plugs, the starter, the fuel system, sensors, or the ignition system. A conventional rule of the type “if the engine starts poorly, check the battery” cannot capture such many-to-many relations.</p>
+      <p class="indent">Professional diagnosis is performed by a mechanic and/or by connecting the vehicle to OBD-II equipment. These procedures are accurate but require a specialist, time, and, in many cases, paid diagnostic hardware and licensed software. Intelligent methods make it possible to analyse a combination of technical parameters and symptoms and to return a ranked hypothesis rather than a single rigid rule. This defines the boundary of the present research: not the replacement of a workshop scanner, but a web-based decision-support tool for the vehicle owner.</p>
+
+      <div class="caption">Table 1 — Main Elements of the Subject Area</div>
+      <table>
+        <thead>
+          <tr><th style="width:24%">Element</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="el">Field of activity</td><td>Automotive service and technical maintenance; intelligent information systems; machine-learning methods for classification of probable vehicle faults.</td></tr>
+          <tr><td class="el">Main objects</td><td>Passenger car (make, model, year, mileage, engine type); diagnostic session; symptom set; fault class (target variable); trained ML model; diagnostic result with probability and recommendation; user account.</td></tr>
+          <tr><td class="el">Main processes</td><td>Registration and authentication of the owner; recording of vehicle data; description of symptoms; transfer of features to the ML model; classification of the probable fault; storage of the result; review of diagnosis history; administration of the fault catalogue and system statistics.</td></tr>
+          <tr><td class="el">Participants or users</td><td>Vehicle owners (clients) — primary users; administrator of the information system; indirectly — mechanics and service stations that receive the owner after a preliminary forecast. The researcher compares ML algorithms on a prepared dataset.</td></tr>
+          <tr><td class="el">Data used</td><td>Categorical data (brand, model, engine type, fault class); numerical data (year, mileage, temperature, fuel consumption); Boolean symptoms (starting problem, vibration, noise, overheating, Check Engine, brake problem); historical diagnosis records; the training/test split of the research dataset.</td></tr>
+          <tr><td class="el">Information systems currently applied</td><td>Manual inspection by a mechanic; OBD-II scanners and consumer applications (code reading); professional workshop platforms (Bosch ESI[tronic], Autel MaxiSys, Launch X-431); regional diagnostic programs (OpenDiagPro); cloud repair knowledge bases (MotorData Professional); simple rule-based checklists.</td></tr>
+          <tr><td class="el">Existing problem</td><td>The owner has only isolated symptoms and cannot determine which vehicle system is the likely cause. Professional tools require hardware and a specialist. Rule-based systems are rigid. Consumer OBD applications mainly decode trouble codes rather than predict a fault from symptoms and vehicle parameters, and they do not experimentally compare classification algorithms.</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Note. Table 1 is compiled by the author on the basis of the project description of AutoFix AI and the analysis of diagnostic practice (OBD-II, workshop software, consumer applications).</p>
+
+      <h2 class="sec" id="t3">4. Task 3. Review of Existing Analogues</h2>
+      <p class="indent">Five analogous solutions were selected. The set includes one domestic (CIS) software product widely used for vehicles typical of the regional fleet, one cloud knowledge system officially distributed in Kazakhstan, and three international products: a consumer mobile service and two professional workshop platforms. This composition satisfies the requirement to include at least one domestic and two international solutions and covers different classes of analogues (desktop program, cloud service, mobile application, professional diagnostic software, hardware-software complex).</p>
+
+      <h3 class="sub">4.1. OpenDiagPro (domestic CIS analogue)</h3>
+      <p class="indent">OpenDiagPro is a computer program for professional diagnosis of electronic control systems of injection vehicles of Russian and foreign production. The OpenDiag project has been developed since 2010; a commercial version with ELM327 support appeared in 2012, and later J2534 adapters were added. The current line (version 1.8.x, updates in 2025–2026) remains actively maintained. The program is used in workshops, service stations, and by owners who have a K-line, ELM327, or J2534 adapter and a personal computer. It reads and clears diagnostic trouble codes, displays live parameters, tests actuators, and covers engine control, immobiliser, automatic transmission, electric power steering, airbags, ABS, climate, and related modules, with a strong focus on VAZ / GAZ / UAZ / ZAZ and additional modules (for example Daewoo/Chevrolet). OpenDiagPro is a specialised operational tool. It does not implement machine-learning prediction from user-described symptoms and does not provide a web-based personal cabinet. Its value for the present research is the regional coverage of vehicles that are common in CIS markets.</p>
+
+      <h3 class="sub">4.2. MotorData Professional (regional cloud analogue, Kazakhstan market)</h3>
+      <p class="indent">MotorData Professional is a cloud-based technical information system for vehicle diagnostics, servicing, and repair, developed by JSC “Legion-Autodata” (Moscow; the company has specialised in automotive repair information since 1994). In Kazakhstan the product is distributed by the official reseller TOO “Motordata International”; licences are paid in tenge, and the documented vehicle coverage emphasises makes that are common in Kazakhstan and Central Asia (Japanese, Korean, Chinese, Russian, and selected European models). The system provides approximately 20,000 interactive wiring diagrams, 60,000 diagnostic trouble codes with causes and test procedures, 4,500 ECU pinouts, component locations, technical service bulletins, and a professional knowledge base. Target users are workshops, auto electricians, diagnostic technicians, and training centres. MotorData helps a specialist interpret an already obtained code; it is not a consumer web application that classifies faults from symptoms by an ML model. It is nevertheless an important analogue because it shows how structured fault knowledge can support diagnosis and because it has an official presence on the Kazakhstani market.</p>
+
+      <h3 class="sub">4.3. FIXD (international consumer analogue)</h3>
+      <p class="indent">FIXD is a consumer diagnostic service developed by FIXD Automotive, Inc. (Atlanta, United States; founded in 2014). A proprietary Bluetooth OBD-II sensor is plugged into the vehicle (generally petrol cars from 1996 and diesel from 2008) and paired with a free iOS/Android application. The application translates thousands of diagnostic trouble codes into plain language, indicates issue severity and driving safety, provides maintenance reminders by make, model, and mileage, supports several family vehicles, and stores scan history. The optional FIXD Premium subscription adds repair cost estimates, a mechanic hotline, 24/7 “AI Mechanic” chat, and an Issue Forecast that aims to predict future problems. FIXD is the closest consumer analogue to AutoFix AI in terms of audience and presentation of results. Its limitations relative to the research task are the mandatory hardware sensor, the primary reliance on OBD codes rather than on a documented ML experiment with Logistic Regression, Decision Tree, and Random Forest, and the absence of an open web information system with a research-style comparison against a rule-based baseline.</p>
+
+      <h3 class="sub">4.4. Bosch ESI[tronic] (international professional analogue)</h3>
+      <p class="indent">ESI[tronic] is professional diagnostic software of Robert Bosch GmbH (Germany) for dealerships, independent workshops, and technicians. Combined with Bosch KTS (or DCU) hardware, it offers coverage of about 130,000 vehicles and 150 brands. Core functions include reading and clearing fault codes, analysing actual values, testing actuators, service reset, component learning, guided troubleshooting (SIS), experience-based repair cases (EBR), Secure Diagnostic Access to protected vehicle data, original manufacturer documentation, and expanding support for electric, hybrid, and Tesla vehicles. ESI[tronic] is an operational workshop system of very high functional breadth. An AI assistant that searches Bosch knowledge for a fault code or keywords has been announced for a 2026 software update; even so, the product remains a licensed professional platform, not a publicly available ML classifier for owners. For AutoFix AI it is a benchmark of diagnostic completeness and of ethically careful wording of repair advice (guided procedures rather than a single categorical claim).</p>
+
+      <h3 class="sub">4.5. Autel MaxiSys (international professional analogue)</h3>
+      <p class="indent">MaxiSys is the professional diagnostic family of Autel Intelligent Technology Corp., Ltd. (Shenzhen, China; founded in 2004). It is a hardware-software complex: an Android diagnostic tablet plus a vehicle communication interface. Typical functions are OE-level all-system diagnosis, bidirectional active tests, more than forty service procedures (oil reset, EPB, SAS, DPF, injector coding, and others), ECU coding and, on senior models, programming, topology mapping of modules, the MaxiFix community knowledge base, cloud storage of diagnostic reports, and Remote Expert. The company describes MaxiSys as a diagnostic expert system connected to Autel Cloud. Prices of flagship kits are measured in thousands of US dollars, which places the product outside the reach of an ordinary owner. MaxiSys demonstrates the upper bound of practical workshop diagnosis and the usefulness of storing diagnostic history, but it does not solve the research problem of comparing classical ML algorithms on symptom-and-parameter data inside a web information system.</p>
+
+      <div class="caption">Table 2 — General Description of the Analogues</div>
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Developer and country</th>
+            <th>Purpose</th>
+            <th>Main functions</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="center">1</td>
+            <td><strong>OpenDiagPro</strong></td>
+            <td>OpenDiagProject (V. Kosyanchuk), Russian Federation</td>
+            <td>Computer diagnosis of electronic systems of Russian and foreign injection vehicles</td>
+            <td>Read/clear DTCs; live data; actuator tests; engine, ABS, SRS, AT, immobiliser, climate; K-line / ELM327 / J2534 adapters</td>
+            <td><a href="http://www.opendiag.pro/about" target="_blank" rel="noopener">opendiag.pro/about</a>; <a href="http://www.opendiag.pro/windows" target="_blank" rel="noopener">windows</a></td>
+          </tr>
+          <tr>
+            <td class="center">2</td>
+            <td><strong>MotorData Professional</strong></td>
+            <td>JSC Legion-Autodata (MotorData), Russia; official reseller in Kazakhstan — TOO Motordata International</td>
+            <td>Cloud technical information system for diagnosis, service and repair</td>
+            <td>≈20,000 wiring diagrams; ≈60,000 DTCs; ≈4,500 ECU pinouts; component locations; TSBs; knowledge base</td>
+            <td><a href="https://motordata.net/en_en/company" target="_blank" rel="noopener">motordata.net</a>; <a href="https://motordata.biz/diagnostic-software-in-kazakhstan/" target="_blank" rel="noopener">motordata.biz (KZ)</a></td>
+          </tr>
+          <tr>
+            <td class="center">3</td>
+            <td><strong>FIXD</strong></td>
+            <td>FIXD Automotive, Inc., United States (Atlanta)</td>
+            <td>Consumer OBD-II diagnosis of check-engine and related issues in plain language</td>
+            <td>Code translation; severity; maintenance alerts; multi-vehicle; scan history; Premium: AI Mechanic, Issue Forecast, cost estimates</td>
+            <td><a href="https://www.fixdapp.com/" target="_blank" rel="noopener">fixdapp.com</a>; <a href="https://www.fixdapp.com/features/" target="_blank" rel="noopener">features</a>; <a href="https://www.fixdapp.com/faq/" target="_blank" rel="noopener">FAQ</a></td>
+          </tr>
+          <tr>
+            <td class="center">4</td>
+            <td><strong>Bosch ESI[tronic]</strong></td>
+            <td>Robert Bosch GmbH, Germany</td>
+            <td>Professional workshop diagnosis, maintenance and repair</td>
+            <td>DTCs; live data; actuators; SIS guided repair; EBR; SDA; OEM documents; EV/Tesla; ≈130,000 vehicles / 150 brands</td>
+            <td><a href="https://www.boschaftermarket.com/gb/en/diagnostics/ecu-diagnosis/esitronic/" target="_blank" rel="noopener">boschaftermarket.com — ESI[tronic]</a></td>
+          </tr>
+          <tr>
+            <td class="center">5</td>
+            <td><strong>Autel MaxiSys</strong></td>
+            <td>Autel Intelligent Technology Corp., Ltd., China (Shenzhen)</td>
+            <td>OE-level professional diagnostic platform (tablet + VCI)</td>
+            <td>All-system scan; active tests; 40+ service functions; coding/programming; topology; MaxiFix; cloud reports; Remote Expert</td>
+            <td><a href="https://autel.com/about/3092.jhtml" target="_blank" rel="noopener">autel.com/about</a>; <a href="https://store.autel.com/collections/autel-maxisys-scanners" target="_blank" rel="noopener">MaxiSys store</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">Note. Sources are official product and company pages accessed in September 2026. Analogue 1 is treated as the domestic (CIS) solution, analogue 2 as a regional solution with official distribution in Kazakhstan, and analogues 3–5 as international solutions.</p>
+
+      <h2 class="sec" id="t4">5. Task 4. Classification of the Analogues</h2>
+      <p class="indent">The selected analogues were classified according to several related characteristics: geographical origin (domestic CIS / regional / international); category of users (ordinary vehicle owners / professional technicians); form of the product (local desktop program, cloud information system, mobile application, professional hardware-software complex); and diagnostic approach (direct ECU communication, knowledge-base interpretation of codes, consumer code translation with optional AI features). Table 3 records the principal category of each analogue and the basis used for assignment.</p>
+
+      <div class="caption">Table 3 — Classification of the Analogues</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name of the analogue</th>
+            <th>Category</th>
+            <th>Basis for classification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="el">OpenDiagPro</td>
+            <td>Domestic (CIS); specialised local desktop software; professional / advanced owner use</td>
+            <td>Country of origin (Russian Federation); Windows program requiring a diagnostic adapter; focus on VAZ/GAZ/UAZ and related ECUs</td>
+          </tr>
+          <tr>
+            <td class="el">MotorData Professional</td>
+            <td>Regional (officially sold in Kazakhstan); cloud-based; professional knowledge system</td>
+            <td>Cloud deployment; target users are workshops and auto electricians; licence paid in KZT via a Kazakhstani reseller</td>
+          </tr>
+          <tr>
+            <td class="el">FIXD</td>
+            <td>International; commercial; consumer mobile application (freemium)</td>
+            <td>Headquarters in the USA; iOS/Android app for drivers; hardware sensor required; optional paid AI/forecast features</td>
+          </tr>
+          <tr>
+            <td class="el">Bosch ESI[tronic]</td>
+            <td>International; commercial; professional operational workshop system</td>
+            <td>German manufacturer; licensed software used with KTS hardware by dealerships and independent workshops</td>
+          </tr>
+          <tr>
+            <td class="el">Autel MaxiSys</td>
+            <td>International; commercial; professional hardware-software diagnostic complex</td>
+            <td>Chinese manufacturer; Android diagnostic tablet plus VCI; OE-level functions for technicians, not for ordinary owners</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">Note. One analogue may belong to several classes; Table 3 shows the dominant class used in the subsequent comparison.</p>
+      <p class="indent">An additional grouping by diagnostic method is useful for the research question. OpenDiagPro, Bosch ESI[tronic], Autel MaxiSys, and FIXD (in its basic mode) are primarily code- and parameter-oriented systems: they communicate with the vehicle and interpret DTCs or live data. MotorData Professional is a reference knowledge system that starts from a code or a component already identified by another tool. Only FIXD Premium and recent Bosch/Autel expert-system features approach automated prediction, and even there the prediction is not published as a reproducible comparison of Logistic Regression, Decision Tree, and Random Forest on a documented dataset. This classification directly motivates AutoFix AI as an experimental, web-based, symptom-oriented research system.</p>
+
+      <h2 class="sec" id="t5">6. Task 5. Comparative Analysis of the Analogues</h2>
+      <p class="indent">Five comparison criteria were defined so that they correspond to the purpose of AutoFix AI and to the characteristics of the selected solutions. The criteria follow from the research question (how effectively ML methods can predict probable faults from technical characteristics and symptoms) and from the planned web architecture.</p>
+      <p><strong>Criterion 1. Fault indication from user-described symptoms without a DTC.</strong> Shows whether the owner can start diagnosis from observed signs (difficult start, vibration, overheating, and similar) rather than from a code already read by a scanner.</p>
+      <p><strong>Criterion 2. Machine learning / AI-based prediction of the fault class.</strong> Records the presence of a trained predictive model or an AI assistant, as opposed to a static code library or a fixed rule table.</p>
+      <p><strong>Criterion 3. Web-based access through a browser.</strong> Distinguishes cloud/web information systems from desktop, tablet, or mobile-only clients.</p>
+      <p><strong>Criterion 4. Personal account with a vehicle register and diagnosis history.</strong> Reflects the information-system nature of the future project (users, cars, diagnosis records).</p>
+      <p><strong>Criterion 5. Accessibility for ordinary vehicle owners without professional equipment.</strong> Combines cost, usability, and independence from workshop scanners or proprietary sensors.</p>
+      <p class="indent">In Table 4 the symbol “+” means that the characteristic is available in a form that matches the criterion; “–” means that it is not available; “±” means that it is available only partially (for example, an AI chat that still requires an OBD sensor, or a cloud account that is a licence rather than an owner’s diagnostic history).</p>
+
+      <div class="caption">Table 4 — Comparative Analysis of the Analogues</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Comparison criterion</th>
+            <th>OpenDiagPro</th>
+            <th>MotorData</th>
+            <th>FIXD</th>
+            <th>ESI[tronic]</th>
+            <th>MaxiSys</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Fault indication from user-described symptoms without a DTC</td>
+            <td class="minus">–</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+          </tr>
+          <tr>
+            <td>2. Machine learning / AI-based prediction of the fault class</td>
+            <td class="minus">–</td>
+            <td class="minus">–</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+          </tr>
+          <tr>
+            <td>3. Web-based access through a browser</td>
+            <td class="minus">–</td>
+            <td class="plus">+</td>
+            <td class="minus">–</td>
+            <td class="minus">–</td>
+            <td class="minus">–</td>
+          </tr>
+          <tr>
+            <td>4. Personal account with a vehicle register and diagnosis history</td>
+            <td class="minus">–</td>
+            <td class="part">±</td>
+            <td class="part">±</td>
+            <td class="minus">–</td>
+            <td class="part">±</td>
+          </tr>
+          <tr>
+            <td>5. Accessibility for ordinary owners without professional equipment</td>
+            <td class="part">±</td>
+            <td class="minus">–</td>
+            <td class="plus">+</td>
+            <td class="minus">–</td>
+            <td class="minus">–</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">Legend: “+” — available; “–” — not available; “±” — partially available. Column titles: MotorData = MotorData Professional; ESI[tronic] = Bosch ESI[tronic]; MaxiSys = Autel MaxiSys. Justifications of the partial scores are given below.</p>
+
+      <h3 class="sub">6.1. Justification of the scores</h3>
+      <p class="indent">OpenDiagPro receives “–” on criteria 1–4 because diagnosis starts from a physical connection to the ECU, not from a symptom form; there is no published ML model, no browser information system, and no personal web cabinet. Criterion 5 is “±”: a private owner can buy an inexpensive adapter, but the interface is technical and oriented to service work.</p>
+      <p class="indent">MotorData Professional is a browser/cloud system (“+” on criterion 3). Criterion 1 is “±” because the knowledge base describes causes and checks for a known DTC or component, not a multi-class prediction from a symptom questionnaire. There is no ML classifier (“–” on criterion 2). The account is a professional licence, not an owner’s garage (“±” on criterion 4). Ordinary drivers are not the target users (“–” on criterion 5).</p>
+      <p class="indent">FIXD is the only analogue clearly designed for ordinary owners (“+” on criterion 5) and stores scan history for several vehicles (“±” on criterion 4: history exists in the mobile app, not as a research-style web information system). Criteria 1 and 2 are “±”: the main path is OBD code translation; Premium adds AI Mechanic chat, manual diagnostic walkthroughs, and Issue Forecast, which are AI-assisted but are not an open experimental comparison of classification algorithms. The product is mobile-first (“–” on criterion 3) and requires the FIXD sensor, so it is accessible as a consumer device but not hardware-free.</p>
+      <p class="indent">Bosch ESI[tronic] offers guided troubleshooting and experience-based repair, therefore criterion 1 is “±”. An AI assistant searching Bosch documentation has been announced for 2026, and EBR is a large case base, so criterion 2 is “±” rather than a confirmed classical ML pipeline. The software is a licensed workshop application (“–” on 3, 4, and 5).</p>
+      <p class="indent">Autel MaxiSys documents the use of customer complaints together with codes, provides MaxiFix and an expert-system layer, and stores cloud reports for the workshop. This yields “±” on criteria 1, 2, and 4. It remains a high-cost tablet complex for technicians (“–” on 3 and 5).</p>
+
+      <h3 class="sub">6.2. Common characteristics</h3>
+      <p class="indent">All five analogues belong to the automotive diagnostic domain and aim to reduce uncertainty about the technical condition of a vehicle. All of them are commercial (or freemium) products rather than open research prototypes. Four of the five rely, in the basic scenario, on diagnostic trouble codes or on a specialist who already knows which system to inspect. None of the analogues publishes a reproducible experiment that trains Logistic Regression, Decision Tree, and Random Forest on the same dataset, compares accuracy, precision, recall, and F1-score, and then deploys the best model through a REST API of a web information system. None of them is positioned as a preliminary forecast that must not replace a mechanic — although FIXD uses cautious consumer language, while Bosch and Autel address trained technicians.</p>
+
+      <h3 class="sub">6.3. Main differences</h3>
+      <p class="indent">The analogues differ first of all in the user category: FIXD serves drivers; OpenDiagPro can be used by both a workshop and an advanced owner; MotorData, Bosch, and Autel serve professionals. They differ in platform: Windows desktop, cloud browser, smartphone, workshop PC plus KTS, Android diagnostic tablet. They differ in the depth of intervention in the vehicle: OpenDiagPro, Bosch, and Autel can perform actuator tests and service functions; FIXD mainly reads and explains codes; MotorData does not connect to the car at all. They also differ in cost and in geographic specialisation: OpenDiagPro and MotorData are adapted to the CIS/Kazakhstan fleet; Bosch and Autel target the global professional aftermarket; FIXD is strongest on the US consumer market.</p>
+
+      <h3 class="sub">6.4. Analogue with the broadest range of functions</h3>
+      <p class="indent">If the range of functions is understood as professional diagnostic coverage (number of brands and models, service procedures, OEM documentation, coding, EV support), the broadest solutions are Bosch ESI[tronic] and Autel MaxiSys. Between the two, ESI[tronic] is stronger as an information and guided-repair environment, while MaxiSys is stronger as a portable all-in-one scan tool with bidirectional control and topology. If the range of functions is understood from the owner’s point of view (plain-language explanation, maintenance, multi-car overview, optional forecast), FIXD provides the broadest consumer package. For the present research the professional leaders are not transferable as a whole: their breadth depends on hardware, licences, and workshop workflows.</p>
+
+      <h3 class="sub">6.5. Limitations of the existing solutions</h3>
+      <p class="indent">The analysis identified the following limitations that define the niche of AutoFix AI. First, consumer and professional scanners require specialised hardware (ELM327/K-line/J2534 adapters, FIXD sensor, Bosch KTS, Autel VCI), so diagnosis cannot start when the owner has only a description of symptoms and the known parameters of the car. Second, knowledge bases such as MotorData interpret a code that has already been obtained; they do not answer the owner’s initial question “which system is the likely cause?”. Third, AI features in FIXD, Bosch, and Autel are closed commercial services; they are not accompanied by an experimental table of accuracy, precision, recall, and F1-score for several algorithms, which is required by the research part of the diploma project. Fourth, there is no web information system that combines registration, a personal vehicle register, a symptom form, a stored probabilistic result, and a history of diagnoses for the owner. Fifth, professional platforms are too expensive and too complex for the stated target user of AutoFix AI. Sixth, existing products rarely compare a machine-learning model with a transparent rule-based baseline, although such a comparison is necessary to test the research hypothesis.</p>
+
+      <h2 class="sec" id="t6">7. Task 6. Conclusion</h2>
+      <p class="indent">The subject area is the preliminary diagnosis of passenger cars by means of intelligent information systems. The main problem is that an owner observes only isolated symptoms, while the same sign may correspond to several faults; professional tools need hardware and a specialist, and rule-based checklists are too rigid.</p>
+      <p class="indent">Five analogues were classified as a domestic CIS desktop scanner (OpenDiagPro), a regional cloud knowledge system sold in Kazakhstan (MotorData Professional), a US consumer mobile service (FIXD), and two international professional platforms (Bosch ESI[tronic] and Autel MaxiSys). Comparison by five criteria showed a shared reliance on trouble codes and commercial licences, and a gap in web-based, hardware-free, symptom-oriented ML prediction. Bosch and Autel offer the broadest workshop functions; FIXD is the most accessible for drivers. Useful features for AutoFix AI are FIXD’s plain-language result and scan history, MotorData’s structured fault knowledge, Bosch’s guided and experience-based repair, Autel’s stored reports, and OpenDiagPro’s relevance to the regional fleet. The future system should combine a web cabinet, a vehicle register, experimentally compared classifiers, a probabilistic recommendation, and a clear statement that the output does not replace professional diagnosis.</p>
+      <p class="note">(Conclusion length: approximately 180 words.)</p>
+
+      <h2 class="sec" id="ref">8. List of Sources Used</h2>
+      <ol class="refs">
+        <li>OpenDiagProject. About the project. URL: <a href="http://www.opendiag.pro/about">http://www.opendiag.pro/about</a> (accessed 18.09.2026).</li>
+        <li>OpenDiagProject. OpenDiagPro for Windows. URL: <a href="http://www.opendiag.pro/windows">http://www.opendiag.pro/windows</a> (accessed 18.09.2026).</li>
+        <li>OpenDiagProject. News (version 1.8.1 rev.1, 27 April 2026). URL: <a href="http://www.opendiag.pro/news">http://www.opendiag.pro/news</a> (accessed 18.09.2026).</li>
+        <li>MotorData. About us (company profile of Legion-Autodata / MotorData). URL: <a href="https://motordata.net/en_en/company">https://motordata.net/en_en/company</a> (accessed 18.09.2026).</li>
+        <li>MotorData. Automotive diagnostic software in Kazakhstan. MotorData Professional. URL: <a href="https://motordata.biz/diagnostic-software-in-kazakhstan/">https://motordata.biz/diagnostic-software-in-kazakhstan/</a> (accessed 18.09.2026).</li>
+        <li>MotorData OBD. About the company. URL: <a href="https://motordata-obd.com/about-company/">https://motordata-obd.com/about-company/</a> (accessed 18.09.2026).</li>
+        <li>FIXD Automotive, Inc. FIXD — official website. URL: <a href="https://www.fixdapp.com/">https://www.fixdapp.com/</a> (accessed 18.09.2026).</li>
+        <li>FIXD Automotive, Inc. Features. URL: <a href="https://www.fixdapp.com/features/">https://www.fixdapp.com/features/</a> (accessed 18.09.2026).</li>
+        <li>FIXD Automotive, Inc. Frequently asked questions. URL: <a href="https://www.fixdapp.com/faq/">https://www.fixdapp.com/faq/</a> (accessed 18.09.2026).</li>
+        <li>Robert Bosch GmbH. Bosch ESI[tronic] software for automotive workshops. URL: <a href="https://www.boschaftermarket.com/gb/en/diagnostics/ecu-diagnosis/esitronic/">https://www.boschaftermarket.com/gb/en/diagnostics/ecu-diagnosis/esitronic/</a> (accessed 18.09.2026).</li>
+        <li>Bosch Mobility Aftermarket. Bosch ESI[tronic] diagnostic software — product news. URL: <a href="https://www.bosch.hr/en/news-and-stories/dijagnosti-ki-softver-bosch-esi-tronic/">https://www.bosch.hr/en/news-and-stories/dijagnosti-ki-softver-bosch-esi-tronic/</a> (accessed 18.09.2026).</li>
+        <li>Autel Intelligent Technology Corp., Ltd. About Autel. URL: <a href="https://autel.com/about/3092.jhtml">https://autel.com/about/3092.jhtml</a> (accessed 18.09.2026).</li>
+        <li>Autel. MaxiSys scanners — official store collection. URL: <a href="https://store.autel.com/collections/autel-maxisys-scanners">https://store.autel.com/collections/autel-maxisys-scanners</a> (accessed 18.09.2026).</li>
+        <li>Autel. MaxiSys comparison chart. URL: <a href="https://store.autel.com/blogs/news/autel-maxisys-comparison-chart">https://store.autel.com/blogs/news/autel-maxisys-comparison-chart</a> (accessed 18.09.2026).</li>
+        <li>ISO 15031 / SAE J1979. Road vehicles — Communication between vehicle and external equipment for emissions-related diagnostics (OBD-II). Geneva: ISO. (standard context of DTC-based diagnosis).</li>
+        <li>Zhang, J. et al. Remote fault diagnosis for the powertrain system of fuel cell vehicles based on random forest optimized with a genetic algorithm. <em>Sensors</em>. 2024. Vol. 24, No. 4. Article 1138. URL: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10893177/">https://pmc.ncbi.nlm.nih.gov/articles/PMC10893177/</a> (accessed 18.09.2026).</li>
+        <li>Tran, D. A. T.; Ho, T. K. P.; Nguyen, V. T. Fault diagnosis in vehicle air conditioning systems via comparison of k-nearest neighbors and random forest classification models. <em>International Journal of Mechanical Engineering and Robotics Research</em>. 2025. Vol. 14, No. 5. URL: <a href="https://www.ijmerr.com/2025/IJMERR-V14N5-534.pdf">https://www.ijmerr.com/2025/IJMERR-V14N5-534.pdf</a> (accessed 18.09.2026).</li>
+      </ol>
+
+      <hr class="rule" />
+      <p class="note" style="text-align:center;">End of the report · Laboratory Work No. 1 · AutoFix AI · 2026</p>
+    </article>
+  </div>
+</body>
+</html>
