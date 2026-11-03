@@ -64,6 +64,16 @@ const diagnosisInput = carInput.extend({
   checkEngine: z.boolean(),
   brakeProblem: z.boolean(),
   fuelHigh: z.boolean(),
+  lossPower: z.boolean(),
+  roughIdle: z.boolean(),
+  stalling: z.boolean(),
+  exhaustSmoke: z.boolean(),
+  oilLeak: z.boolean(),
+  coolantLeak: z.boolean(),
+  batteryWarning: z.boolean(),
+  oilPressureWarning: z.boolean(),
+  fuelSmell: z.boolean(),
+  brakeWarning: z.boolean(),
 });
 
 const carIdInput = z.number().int().positive();

@@ -51,10 +51,10 @@ function DiagnosePage() {
           <label className="mt-3 block text-sm text-muted">Тип двигателя<select value={engineType} onChange={(e) => setEngineType(e.target.value as EngineType)} className="mt-1 min-h-11 w-full rounded-md border border-border bg-bg px-3 text-fg">{ENGINE_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
         </section>
         <section className="rounded-lg border border-border bg-surface p-4 md:p-5">
-          <h2 className="font-medium">Наблюдаемые симптомы</h2><p className="mt-1 text-sm text-muted">Можно выбрать несколько пунктов.</p>
+          <h2 className="font-medium">Наблюдаемые симптомы</h2><p className="mt-1 text-sm text-muted">Можно отметить несколько симптомов. Выбирайте только то, что действительно наблюдаете.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">{SYMPTOMS.map((item) => <label key={item.id} className="flex min-h-16 cursor-pointer items-start gap-3 rounded-md border border-border bg-bg p-3 hover:border-primary/50"><input type="checkbox" checked={symptoms[item.id as SymptomId]} onChange={(e) => setSymptoms((old) => ({ ...old, [item.id]: e.target.checked }))} className="mt-1 accent-primary"/><span><span className="block text-sm font-medium">{item.label}</span><span className="mt-1 block text-xs text-muted">{item.hint}</span></span></label>)}</div>
         </section>
-        <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs leading-5 text-muted"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-primary"/><p>Результат является предварительным и не заменяет осмотр, OBD-II считывание и заключение автомеханика.</p><CircleHelp className="hidden"/></div>
+        <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs leading-5 text-muted"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-primary"/><p>Если горит красный индикатор давления масла, немедленно безопасно остановитесь и заглушите двигатель. При запахе или утечке топлива выключите двигатель и не создавайте искр. Результат AutoFix предварительный и не заменяет осмотр и считывание кодов OBD-II.</p><CircleHelp className="hidden"/></div>
         <Button type="submit" size="lg" disabled={busy}>{busy ? "Анализируем…" : "Получить предварительный результат"}</Button>
       </form>
     </div>

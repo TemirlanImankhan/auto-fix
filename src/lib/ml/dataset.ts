@@ -1,10 +1,10 @@
-import { BRANDS, ENGINE_TYPES, FAULTS, type DiagnosisInput, type EngineType, type FaultId } from "./taxonomy";
+import { BRANDS, ENGINE_TYPES, FAULTS, SYMPTOMS, type DiagnosisInput, type EngineType, type FaultId, type SymptomId, type SymptomMap } from "./taxonomy";
 import { encodeInput } from "./features";
 import { bernoulli, choice, clamp, mulberry32 } from "./rng";
 
 export type Sample = { x: number[]; y: number; raw: DiagnosisInput; fault: FaultId };
 
-const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
+const SYMPTOM_PROFILES: Record<FaultId, Partial<Record<SymptomId, number>>> = {
   battery: {
     startingProblem: 0.95,
     vibration: 0.08,
@@ -13,6 +13,8 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.1,
     brakeProblem: 0.02,
     fuelHigh: 0.05,
+    batteryWarning: 0.86,
+    stalling: 0.32,
   },
   ignition: {
     startingProblem: 0.8,
@@ -22,6 +24,10 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.88,
     brakeProblem: 0.02,
     fuelHigh: 0.22,
+    lossPower: 0.65,
+    roughIdle: 0.78,
+    stalling: 0.44,
+    exhaustSmoke: 0.18,
   },
   fuel: {
     startingProblem: 0.62,
@@ -31,6 +37,11 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.42,
     brakeProblem: 0.02,
     fuelHigh: 0.92,
+    lossPower: 0.72,
+    roughIdle: 0.48,
+    stalling: 0.38,
+    exhaustSmoke: 0.35,
+    fuelSmell: 0.58,
   },
   cooling: {
     startingProblem: 0.08,
@@ -40,6 +51,8 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.28,
     brakeProblem: 0.02,
     fuelHigh: 0.12,
+    coolantLeak: 0.78,
+    exhaustSmoke: 0.18,
   },
   engine: {
     startingProblem: 0.12,
@@ -49,6 +62,11 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.28,
     brakeProblem: 0.04,
     fuelHigh: 0.22,
+    lossPower: 0.58,
+    roughIdle: 0.65,
+    exhaustSmoke: 0.62,
+    oilLeak: 0.42,
+    oilPressureWarning: 0.24,
   },
   brakes: {
     startingProblem: 0.03,
@@ -58,6 +76,7 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.06,
     brakeProblem: 0.97,
     fuelHigh: 0.04,
+    brakeWarning: 0.82,
   },
   sensors: {
     startingProblem: 0.18,
@@ -67,6 +86,10 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.96,
     brakeProblem: 0.03,
     fuelHigh: 0.18,
+    lossPower: 0.36,
+    roughIdle: 0.44,
+    stalling: 0.2,
+    batteryWarning: 0.22,
   },
   exhaust: {
     startingProblem: 0.08,
@@ -76,6 +99,9 @@ const SYMPTOM_PROFILES: Record<FaultId, Record<string, number>> = {
     checkEngine: 0.78,
     brakeProblem: 0.02,
     fuelHigh: 0.88,
+    lossPower: 0.7,
+    exhaustSmoke: 0.42,
+    fuelSmell: 0.62,
   },
 };
 
@@ -91,19 +117,14 @@ export function generateDataset(n = 900, seed = 2026): Sample[] {
     const baseMileage = (2026 - year) * (9000 + rand() * 14000);
     const mileage = Math.round(clamp(baseMileage + (rand() - 0.5) * 40000, 8000, 380000));
     const profile = SYMPTOM_PROFILES[fault];
+    const rawSymptoms = Object.fromEntries(SYMPTOMS.map(({ id }) => [id, bernoulli(rand, profile[id] ?? 0.04)])) as SymptomMap;
     const raw: DiagnosisInput = {
       brand,
       model: "Demo",
       year,
       mileage,
       engineType,
-      startingProblem: bernoulli(rand, profile.startingProblem),
-      vibration: bernoulli(rand, profile.vibration),
-      noise: bernoulli(rand, profile.noise),
-      overheating: bernoulli(rand, profile.overheating),
-      checkEngine: bernoulli(rand, profile.checkEngine),
-      brakeProblem: bernoulli(rand, profile.brakeProblem),
-      fuelHigh: bernoulli(rand, profile.fuelHigh),
+      ...rawSymptoms,
     };
     let label = y;
     if (rand() < 0.06) label = Math.floor(rand() * FAULTS.length);

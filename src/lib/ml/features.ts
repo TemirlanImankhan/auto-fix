@@ -16,6 +16,16 @@ export const FEATURE_NAMES = [
   "checkEngine",
   "brakeProblem",
   "fuelHigh",
+  "lossPower",
+  "roughIdle",
+  "stalling",
+  "exhaustSmoke",
+  "oilLeak",
+  "coolantLeak",
+  "batteryWarning",
+  "oilPressureWarning",
+  "fuelSmell",
+  "brakeWarning",
 ] as const;
 
 export const FEATURE_LABELS: Record<(typeof FEATURE_NAMES)[number], string> = {
@@ -33,6 +43,16 @@ export const FEATURE_LABELS: Record<(typeof FEATURE_NAMES)[number], string> = {
   checkEngine: "Check Engine",
   brakeProblem: "Тормоза",
   fuelHigh: "Расход топлива",
+  lossPower: "Потеря мощности",
+  roughIdle: "Неровный холостой ход",
+  stalling: "Двигатель глохнет",
+  exhaustSmoke: "Дым из выхлопа",
+  oilLeak: "Утечка масла",
+  coolantLeak: "Утечка охлаждающей жидкости",
+  batteryWarning: "Индикатор аккумулятора",
+  oilPressureWarning: "Индикатор давления масла",
+  fuelSmell: "Запах топлива / выхлопа",
+  brakeWarning: "Индикатор тормозов / ABS",
 };
 
 const JP = new Set(["Toyota", "Nissan", "Hyundai", "Kia"]);
@@ -62,6 +82,16 @@ export function encodeInput(input: DiagnosisInput, now = 2026): number[] {
     input.checkEngine ? 1 : 0,
     input.brakeProblem ? 1 : 0,
     input.fuelHigh ? 1 : 0,
+    input.lossPower ? 1 : 0,
+    input.roughIdle ? 1 : 0,
+    input.stalling ? 1 : 0,
+    input.exhaustSmoke ? 1 : 0,
+    input.oilLeak ? 1 : 0,
+    input.coolantLeak ? 1 : 0,
+    input.batteryWarning ? 1 : 0,
+    input.oilPressureWarning ? 1 : 0,
+    input.fuelSmell ? 1 : 0,
+    input.brakeWarning ? 1 : 0,
   ];
 }
 

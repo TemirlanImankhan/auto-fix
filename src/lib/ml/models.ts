@@ -188,6 +188,35 @@ export function predictRules(input: DiagnosisInput) {
   if (input.checkEngine && !input.overheating && !input.brakeProblem) set("sensors", 0.2);
   if (input.startingProblem && input.fuelHigh) set("fuel", 0.32);
   if (input.vibration && !input.noise) set("engine", 0.18);
+  if (input.lossPower) {
+    set("fuel", 0.2);
+    set("ignition", 0.16);
+    set("engine", 0.14);
+    set("exhaust", 0.12);
+  }
+  if (input.roughIdle) {
+    set("ignition", 0.28);
+    set("fuel", 0.18);
+    set("engine", 0.16);
+  }
+  if (input.stalling) {
+    set("battery", 0.2);
+    set("ignition", 0.2);
+    set("fuel", 0.16);
+  }
+  if (input.exhaustSmoke) {
+    set("engine", 0.18);
+    set("fuel", 0.12);
+    set("exhaust", 0.14);
+  }
+  if (input.oilLeak || input.oilPressureWarning) set("engine", input.oilPressureWarning ? 0.38 : 0.2);
+  if (input.coolantLeak) set("cooling", 0.62);
+  if (input.batteryWarning) set("battery", 0.5);
+  if (input.fuelSmell) {
+    set("fuel", 0.28);
+    set("exhaust", 0.18);
+  }
+  if (input.brakeWarning) set("brakes", 0.62);
   const sum = dist.reduce((a, b) => a + b, 0);
   const norm = dist.map((v) => v / sum);
   return { cls: majority(norm), dist: norm };
