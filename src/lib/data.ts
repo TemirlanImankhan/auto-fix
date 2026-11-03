@@ -42,6 +42,7 @@ export type MaintenanceRecord = {
   serviceType: MaintenanceType;
   serviceDate: string;
   mileage: number;
+  costTenge: number;
   notes: string;
   nextServiceDate: string | null;
   nextServiceMileage: number | null;
@@ -78,7 +79,7 @@ export const listMaintenance = createServerFn({ method: "GET" })
     return sql<MaintenanceRecord>`
       select m.id, m.car_id as "carId", c.brand || ' ' || c.model || ' ' || c.year::text as "carLabel",
         c.mileage as "currentMileage", m.service_type as "serviceType", m.service_date::text as "serviceDate",
-        m.mileage, m.notes, m.next_service_date::text as "nextServiceDate", m.next_service_mileage as "nextServiceMileage"
+        m.mileage, m.cost_tenge as "costTenge", m.notes, m.next_service_date::text as "nextServiceDate", m.next_service_mileage as "nextServiceMileage"
       from maintenance_records m
       join cars c on c.id = m.car_id and c.user_id = m.user_id
       where m.user_id = ${context.userId}
@@ -89,7 +90,7 @@ export const listMaintenance = createServerFn({ method: "GET" })
 export const saveMaintenance = createServerFn({ method: "POST" })
   .validator((input: {
     id?: number; carId: number; serviceType: MaintenanceType; serviceDate: string; mileage: number;
-    notes: string; nextServiceDate: string | null; nextServiceMileage: number | null;
+    costTenge: number; notes: string; nextServiceDate: string | null; nextServiceMileage: number | null;
   }) => {
     const data = {
       id: input.id === undefined ? undefined : carIdInput.parse(input.id),
@@ -97,6 +98,7 @@ export const saveMaintenance = createServerFn({ method: "POST" })
       serviceType: z.enum(MAINTENANCE_TYPES.map((item) => item.id) as [MaintenanceType, ...MaintenanceType[]]).parse(input.serviceType),
       serviceDate: validIsoDate.parse(input.serviceDate),
       mileage: z.number().int().min(0).max(2_000_000).parse(input.mileage),
+      costTenge: z.number().int().min(0).max(1_000_000_000).parse(input.costTenge),
       notes: z.string().trim().max(1000).parse(input.notes),
       nextServiceDate: input.nextServiceDate === null ? null : validIsoDate.parse(input.nextServiceDate),
       nextServiceMileage: input.nextServiceMileage === null ? null : z.number().int().min(0).max(2_000_000).parse(input.nextServiceMileage),
@@ -118,7 +120,7 @@ export const saveMaintenance = createServerFn({ method: "POST" })
     if (data.id !== undefined) {
       const rows = await sql<{ id: number }>`
         update maintenance_records set car_id = ${data.carId}, service_type = ${data.serviceType},
-          service_date = ${data.serviceDate}, mileage = ${data.mileage}, notes = ${data.notes},
+          service_date = ${data.serviceDate}, mileage = ${data.mileage}, cost_tenge = ${data.costTenge}, notes = ${data.notes},
           next_service_date = ${data.nextServiceDate}, next_service_mileage = ${data.nextServiceMileage}
         where id = ${data.id} and user_id = ${context.userId} returning id
       `;
@@ -126,8 +128,8 @@ export const saveMaintenance = createServerFn({ method: "POST" })
       return rows[0].id;
     }
     const rows = await sql<{ id: number }>`
-      insert into maintenance_records (user_id, car_id, service_type, service_date, mileage, notes, next_service_date, next_service_mileage)
-      values (${context.userId}, ${data.carId}, ${data.serviceType}, ${data.serviceDate}, ${data.mileage}, ${data.notes}, ${data.nextServiceDate}, ${data.nextServiceMileage})
+      insert into maintenance_records (user_id, car_id, service_type, service_date, mileage, cost_tenge, notes, next_service_date, next_service_mileage)
+      values (${context.userId}, ${data.carId}, ${data.serviceType}, ${data.serviceDate}, ${data.mileage}, ${data.costTenge}, ${data.notes}, ${data.nextServiceDate}, ${data.nextServiceMileage})
       returning id
     `;
     return rows[0].id;
