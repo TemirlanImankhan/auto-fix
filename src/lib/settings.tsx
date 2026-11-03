@@ -3,10 +3,11 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type AppSettings = {
   theme: "dark" | "light";
   showAssistant: boolean;
+  language: "ru" | "kk" | "en";
 };
 
 const STORAGE_KEY = "autofix:preferences:v1";
-const DEFAULT_SETTINGS: AppSettings = { theme: "dark", showAssistant: true };
+const DEFAULT_SETTINGS: AppSettings = { theme: "dark", showAssistant: true, language: "ru" };
 const SettingsContext = createContext<{
   settings: AppSettings;
   updateSettings: (patch: Partial<AppSettings>) => void;
@@ -21,6 +22,7 @@ function readSettings(): AppSettings {
     return {
       theme: value.theme === "light" ? "light" : "dark",
       showAssistant: typeof value.showAssistant === "boolean" ? value.showAssistant : true,
+      language: value.language === "kk" || value.language === "en" ? value.language : "ru",
     };
   } catch {
     return DEFAULT_SETTINGS;
@@ -39,6 +41,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     document.documentElement.dataset.theme = settings.theme;
+    document.documentElement.lang = settings.language;
     document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute("content", settings.theme === "light" ? "#f3f5f0" : "#0b1110");
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
