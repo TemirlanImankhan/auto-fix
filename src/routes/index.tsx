@@ -79,7 +79,7 @@ function Home() {
         <Link to="/research" className="group flex min-h-36 items-center gap-4 rounded-2xl border border-border bg-surface/60 p-5 transition-colors hover:border-primary/40 sm:p-6"><span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-border bg-bg text-primary"><FlaskConical className="size-5"/></span><span className="min-w-0 flex-1"><span className="block text-lg font-semibold">Методика проекта</span><span className="mt-1 block text-sm leading-5 text-muted">Алгоритмы, метрики и ограничения модели.</span></span><ArrowUpRight className="size-5 shrink-0 text-muted transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary"/></Link>
       </section>
 
-      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/[0.045] p-4 sm:p-5"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-primary"/><p className="text-xs leading-5 text-muted sm:text-sm">AutoFix — исследовательский прототип. Результат помогает структурировать симптомы, но не заменяет осмотр автомобиля и заключение автомеханика.</p></div>
+      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/[0.045] p-4 sm:p-5"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-primary"/><p className="text-xs leading-5 text-muted sm:text-sm">AutoFix помогает вести данные автомобиля и предварительно оценивать симптомы. Результат не заменяет осмотр и заключение автомеханика.</p></div>
       {!isPending && !user ? <div className="mt-5 text-center"><Link to="/login" className="inline-flex"><Button variant="outline" className="rounded-xl">Создать личный аккаунт<ArrowRight className="size-4"/></Button></Link></div> : null}
     </div>
   );
