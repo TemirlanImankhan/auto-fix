@@ -21,20 +21,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      <header className="sticky top-0 z-30 border-b border-border bg-bg/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
+      <header className="sticky top-0 z-30 border-b border-border/80 bg-bg/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:px-6">
           <Link to="/" className="flex min-h-11 items-center gap-2.5">
-            <span className="grid size-8 place-items-center rounded-lg border border-border bg-surface text-primary"><Wrench className="size-4" /></span>
-            <span className="font-display text-xl tracking-tight text-fg">AutoFix AI</span>
-            <span className="hidden rounded-full border border-border px-2 py-0.5 text-[10px] text-muted sm:inline-flex">CAR DIAGNOSTICS</span>
+            <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-fg shadow-[0_0_28px_rgb(198_243_107_/_18%)]"><Wrench className="size-4" strokeWidth={2.4} /></span>
+            <span className="font-display text-xl font-semibold tracking-tight text-fg">AutoFix<span className="text-primary">.</span></span>
+            <span className="hidden rounded-full border border-border px-2.5 py-1 text-[9px] font-semibold tracking-[0.16em] text-muted sm:inline-flex">CAR CARE</span>
           </Link>
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1 rounded-xl border border-border/70 bg-surface/70 p-1">
             {NAV.map((item) => {
               const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
               return (
                 <Link key={item.to} to={item.to} className={cn(
-                  "inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-sm transition-colors",
-                  active ? "bg-surface text-fg" : "text-muted hover:bg-surface hover:text-fg",
+                  "inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-[13px] font-medium transition-colors",
+                  active ? "bg-surface-2 text-primary shadow-sm" : "text-muted hover:bg-surface-2 hover:text-fg",
                 )}>
                   <item.icon className="size-4" />{item.label}
                 </Link>
@@ -43,21 +43,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </nav>
           <div className="hidden sm:block">
             {isPending ? <span className="block h-9 w-24 animate-pulse rounded-md bg-surface" /> : user ? <UserButton /> : (
-              <Link to="/login" className="inline-flex min-h-10 items-center rounded-md border border-border px-3 text-sm text-fg hover:bg-surface">Войти</Link>
+              <Link to="/login" className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-medium text-fg transition-colors hover:border-primary/60 hover:bg-surface">Войти</Link>
             )}
           </div>
-          <button type="button" className="grid size-10 place-items-center rounded-md border border-border text-fg lg:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
+          <button type="button" className="grid size-10 place-items-center rounded-xl border border-border bg-surface text-fg lg:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
-        {open ? <nav className="grid gap-1 border-t border-border bg-bg px-3 py-2 lg:hidden">
-          {NAV.map((item) => <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm text-fg hover:bg-surface"><item.icon className="size-4 text-primary" />{item.label}</Link>)}
+        {open ? <nav className="grid gap-1 border-t border-border bg-bg px-3 py-3 lg:hidden">
+          {NAV.map((item) => <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-fg hover:bg-surface"><item.icon className="size-4 text-primary" />{item.label}</Link>)}
           <div className="border-t border-border pt-2">{isPending ? null : user ? <UserButton /> : <Link to="/login" onClick={() => setOpen(false)} className="flex min-h-11 items-center px-3 text-sm text-fg">Войти или создать аккаунт</Link>}</div>
         </nav> : null}
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t border-border px-4 py-5 text-center text-xs text-muted">
-        AutoFix AI · предварительная диагностика автомобиля · <Link to="/about" className="text-primary hover:underline">О проекте</Link> · 2026
+      <footer className="border-t border-border/80 px-4 py-6 text-center text-xs text-muted">
+        <span className="font-semibold text-fg">AutoFix<span className="text-primary">.</span></span> · цифровой помощник владельца автомобиля · <Link to="/about" className="text-primary hover:underline">О проекте</Link> · 2026
       </footer>
     </div>
   );

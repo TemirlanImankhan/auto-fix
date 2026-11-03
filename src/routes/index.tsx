@@ -1,23 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Activity, ArrowRight, CalendarClock, CarFront, ClipboardList, FlaskConical, GitCompare, ShieldAlert, Wrench } from "lucide-react";
+import { Activity, ArrowRight, ArrowUpRight, CalendarClock, CarFront, ClipboardList, FlaskConical, Gauge, ShieldAlert, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listCars, listDiagnoses, listMaintenance } from "@/lib/data";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-const pinned = [
-  { title: "AI-диагностика", subtitle: "Оценить симптомы и получить предварительную гипотезу", tag: "DIAGNOSTIC", icon: Activity, to: "/diagnose" as const },
-  { title: "Мой гараж", subtitle: "Сохранённые автомобили и их характеристики", tag: "GARAGE", icon: CarFront, to: "/cars" as const },
-  { title: "Обслуживание", subtitle: "История работ и плановые отметки по пробегу", tag: "SERVICE", icon: CalendarClock, to: "/maintenance" as const },
-  { title: "История", subtitle: "Ранее созданные диагностические отчёты", tag: "PRIVATE", icon: ClipboardList, to: "/history" as const },
-  { title: "Исследование", subtitle: "Методика, модели и ограничения прототипа", tag: "RESEARCH", icon: FlaskConical, to: "/research" as const },
-];
-
 function Home() {
   const { user, isPending } = useCurrentUserState();
   const [counts, setCounts] = useState<{ cars: number; diagnoses: number; maintenance: number } | null>(null);
+
   useEffect(() => {
     if (!user) { setCounts(null); return; }
     let active = true;
@@ -28,36 +21,74 @@ function Home() {
   }, [user]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-16 pt-7 md:pt-10">
-      <div className="grid gap-8 lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-10">
-        <aside className="min-w-0">
-          <div className="flex items-center gap-4 lg:block">
-            <div className="grid size-20 shrink-0 place-items-center rounded-full border border-border bg-surface text-primary shadow-sm md:size-28 lg:size-52"><Wrench className="size-9 md:size-12 lg:size-20" strokeWidth={1.4} /></div>
-            <div className="min-w-0 lg:mt-4"><h1 className="font-display text-3xl leading-none tracking-tight md:text-4xl">AutoFix AI</h1><p className="mt-1 text-base text-muted">Предварительная диагностика</p></div>
+    <div className="mx-auto max-w-7xl px-4 pb-16 pt-5 md:px-6 md:pt-8">
+      <section className="autofix-panel relative isolate overflow-hidden rounded-[1.5rem] px-5 py-8 sm:px-8 md:min-h-[390px] md:px-12 md:py-12">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_84%_46%,rgb(153_202_92_/_15%),transparent_43%)]" />
+        <div className="pointer-events-none absolute -right-16 -top-24 -z-10 size-80 rounded-full border border-primary/10 md:right-16 md:top-1/2 md:size-[410px] md:-translate-y-1/2" />
+        <div className="pointer-events-none absolute -right-2 -top-10 -z-10 size-60 rounded-full border border-primary/10 md:right-28 md:top-1/2 md:size-[290px] md:-translate-y-1/2" />
+        <div className="relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary"><Sparkles className="size-3.5"/>Auto care, made clearer</div>
+          <h1 className="mt-6 max-w-xl font-display text-4xl font-semibold leading-[1.04] tracking-[-0.045em] sm:text-5xl md:text-6xl">Автомобиль<br className="hidden sm:block"/> под контролем<span className="text-primary">.</span></h1>
+          <p className="mt-5 max-w-lg text-sm leading-6 text-muted sm:text-base sm:leading-7">Соберите историю автомобиля в одном месте: предварительная проверка симптомов, гараж и плановое обслуживание.</p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link to="/diagnose"><Button size="lg" className="min-h-12 rounded-xl px-5"><Activity className="size-4"/>Проверить симптомы<ArrowRight className="size-4"/></Button></Link>
+            <Link to="/cars"><Button variant="outline" size="lg" className="min-h-12 rounded-xl border-border bg-surface/70 px-5"><CarFront className="size-4"/>Мой гараж</Button></Link>
           </div>
-          <p className="mt-5 text-sm leading-6 text-fg">Исследовательский прототип для оценки вероятных неисправностей автомобиля по введённым характеристикам и симптомам.</p>
-          <div className="mt-4 flex items-center gap-2 text-sm text-muted"><span className="size-2 rounded-full bg-primary" /> Автомобильная диагностика</div>
-          <div className="mt-5 grid gap-2 text-sm text-muted"><div className="flex items-center gap-2"><ShieldAlert className="size-4 text-primary" /> Результат требует проверки специалистом</div><div className="flex items-center gap-2"><ClipboardList className="size-4 text-primary" /> Личная история по аккаунту</div></div>
-          <div className="mt-6 flex flex-wrap gap-2"><span className="rounded-full border border-border px-2.5 py-1 text-xs text-muted">ML prototype</span><span className="rounded-full border border-border px-2.5 py-1 text-xs text-muted">Web app</span><span className="rounded-full border border-border px-2.5 py-1 text-xs text-muted">RU</span></div>
-          {!isPending && !user ? <Link to="/login" className="mt-6 block"><Button className="w-full">Создать аккаунт</Button></Link> : null}
-        </aside>
+          <div className="mt-7 flex items-center gap-2 text-xs text-muted"><span className="size-1.5 rounded-full bg-primary"/>Личные данные хранятся отдельно в вашем аккаунте</div>
+        </div>
+        <div aria-hidden="true" className="pointer-events-none absolute bottom-0 right-3 hidden h-[340px] w-[450px] md:block">
+          <div className="absolute bottom-7 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+          <div className="absolute bottom-9 left-10 right-10 h-28 rounded-[50%] border border-primary/10" />
+          <svg viewBox="0 0 460 300" fill="none" className="absolute inset-0 h-full w-full drop-shadow-[0_24px_45px_rgb(0_0_0_/_45%)]">
+            <defs><linearGradient id="car-body" x1="104" y1="110" x2="382" y2="226" gradientUnits="userSpaceOnUse"><stop stopColor="#d7f39a"/><stop offset=".48" stopColor="#91b965"/><stop offset="1" stopColor="#46694a"/></linearGradient><linearGradient id="glass" x1="175" y1="105" x2="302" y2="166" gradientUnits="userSpaceOnUse"><stop stopColor="#263c36"/><stop offset="1" stopColor="#101918"/></linearGradient></defs>
+            <ellipse cx="249" cy="236" rx="153" ry="19" fill="#000" fillOpacity=".38"/>
+            <path d="m89 196 17-43c5-13 15-22 29-26l45-14 41-45c8-9 18-14 30-14h65c16 0 29 7 39 19l34 43 34 16c10 5 16 13 18 24l5 30c2 11-6 21-18 22l-19 2h-23c-3-25-23-43-48-43s-45 18-48 43H189c-3-25-23-43-48-43s-45 18-48 43l-7-1c-12-1-19-13-15-24Z" fill="url(#car-body)" stroke="#e2f5bb" strokeOpacity=".72" strokeWidth="2"/>
+            <path d="m188 117 39-43c7-8 16-12 26-12h58c13 0 24 6 32 16l30 39H188Z" fill="url(#glass)" stroke="#e3f7be" strokeOpacity=".3" strokeWidth="2"/>
+            <path d="m259 64-2 53m56-53 30 53" stroke="#c6f36b" strokeOpacity=".28" strokeWidth="2"/>
+            <path d="m119 154 34-10m194-1 35 12" stroke="#fff4c8" strokeLinecap="round" strokeWidth="6"/>
+            <path d="M96 201h18m272-1h25" stroke="#c6f36b" strokeLinecap="round" strokeOpacity=".8" strokeWidth="4"/>
+            <circle cx="141" cy="217" r="31" fill="#0c1210" stroke="#6a8070" strokeWidth="4"/><circle cx="141" cy="217" r="17" fill="#24352d" stroke="#c6f36b" strokeOpacity=".75" strokeWidth="3"/><circle cx="141" cy="217" r="5" fill="#c6f36b"/>
+            <circle cx="337" cy="217" r="31" fill="#0c1210" stroke="#6a8070" strokeWidth="4"/><circle cx="337" cy="217" r="17" fill="#24352d" stroke="#c6f36b" strokeOpacity=".75" strokeWidth="3"/><circle cx="337" cy="217" r="5" fill="#c6f36b"/>
+            <path d="M90 174h-24m-4 0h-15m392-15h18m9 0h11" stroke="#c6f36b" strokeLinecap="round" strokeOpacity=".55" strokeWidth="2"/>
+          </svg>
+          <div className="absolute right-0 top-10 rounded-2xl border border-border/80 bg-bg/80 px-4 py-3 shadow-xl backdrop-blur"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted"><Gauge className="size-3.5 text-primary"/>Car overview</div><p className="mt-1 font-mono text-sm text-fg">CARE · LOG · CHECK</p></div>
+        </div>
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-[-4rem] -z-10 size-64 rounded-full bg-primary/5 blur-3xl md:hidden" />
+      </section>
 
-        <section className="min-w-0">
-          <div className="border-b border-border pb-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Обзор проекта</p><h2 className="mt-2 font-display text-4xl leading-none tracking-tight md:text-5xl">Разберитесь в симптомах автомобиля</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-muted">Сохраните автомобиль в гараже, отметьте наблюдаемые признаки и получите объяснимый предварительный результат.</p></div><Link to="/diagnose"><Button variant="outline"><Activity className="size-4" /> Начать диагностику</Button></Link></div></div>
-          <div className="mt-5 flex gap-6 overflow-x-auto border-b border-border text-sm"><span className="relative -mb-px inline-flex min-h-11 items-center gap-2 border-b-2 border-primary px-1 font-medium text-fg"><Wrench className="size-4" /> Обзор</span><Link to="/diagnose" className="inline-flex min-h-11 items-center gap-2 px-1 text-muted hover:text-fg"><Activity className="size-4" /> Диагностика</Link><Link to="/cars" className="inline-flex min-h-11 items-center gap-2 px-1 text-muted hover:text-fg"><CarFront className="size-4" /> Автомобили</Link><Link to="/maintenance" className="inline-flex min-h-11 items-center gap-2 px-1 text-muted hover:text-fg"><CalendarClock className="size-4" /> Обслуживание</Link><Link to="/history" className="inline-flex min-h-11 items-center gap-2 px-1 text-muted hover:text-fg"><ClipboardList className="size-4" /> История</Link><Link to="/research" className="inline-flex min-h-11 items-center gap-2 px-1 text-muted hover:text-fg"><FlaskConical className="size-4" /> Исследование</Link></div>
+      <section className="mt-5 grid gap-3 sm:grid-cols-3" aria-label="Сводка аккаунта">
+        <Metric icon={CarFront} label="Автомобили в гараже" value={user ? counts?.cars : null} />
+        <Metric icon={Activity} label="Отчёты диагностики" value={user ? counts?.diagnoses : null} />
+        <Metric icon={CalendarClock} label="Записи обслуживания" value={user ? counts?.maintenance : null} />
+      </section>
 
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><h3 className="font-display text-2xl tracking-tight">Закреплённые разделы</h3>{user && counts ? <p className="text-xs text-muted">{counts.cars} авто · {counts.diagnoses} отчётов · {counts.maintenance} работ</p> : null}</div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">{pinned.map(({ title, subtitle, tag, icon: Icon, to }) => <Link key={title} to={to} className="group rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/50 hover:bg-surface-2"><div className="flex items-start justify-between gap-3"><span className="flex items-center gap-2 font-medium text-primary"><Icon className="size-4" />{title}</span><span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] tracking-wide text-muted">{tag}</span></div><p className="mt-3 min-h-10 text-sm leading-5 text-muted">{subtitle}</p><span className="mt-3 inline-flex items-center gap-1 text-xs text-muted group-hover:text-fg">Открыть <ArrowRight className="size-3" /></span></Link>)}</div>
+      <section className="mt-12">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">AutoFix tools</p><h2 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Всё важное для вашего авто</h2></div>
+          <span className="text-sm text-muted">Три простых шага к порядку</span>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <FeatureCard icon={Activity} number="01" title="Проверить симптомы" text="Отметьте наблюдаемые признаки и получите предварительную гипотезу с объяснением." to="/diagnose" action="Начать проверку" />
+          <FeatureCard icon={CarFront} number="02" title="Собрать гараж" text="Храните параметры своих машин, чтобы быстрее запускать диагностику и вести историю." to="/cars" action="Открыть гараж" />
+          <FeatureCard icon={CalendarClock} number="03" title="Планировать обслуживание" text="Записывайте работы, расходы и следующие даты или пробеги для ТО." to="/maintenance" action="Вести журнал" />
+        </div>
+      </section>
 
-          <div className="mt-8 flex items-center justify-between border-b border-border pb-2"><h3 className="font-display text-2xl tracking-tight">Возможности AutoFix</h3><span className="text-xs text-muted">обзор</span></div>
-          <div className="divide-y divide-border"><Feature icon={Activity} title="Симптомы и классификация" label="DIAGNOSIS" text="Ввод характеристик автомобиля и наблюдаемых признаков для формирования предварительной гипотезы."/><Feature icon={CarFront} title="Личный гараж" label="ACCOUNT" text="Сохраняйте автомобили отдельно в своём аккаунте и выбирайте их при следующей проверке."/><Feature icon={CalendarClock} title="История обслуживания" label="SERVICE LOG" text="Записывайте выполненные работы и планируйте напоминания по дате или пробегу."/><Feature icon={GitCompare} title="Исследовательский раздел" label="THESIS" text="Сравнение алгоритмов и описание того, какие проверки нужны для дипломной валидации."/></div>
-          <div className="mt-7 flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-primary"/><p className="leading-6 text-muted">Модель пока остаётся демонстрационным прототипом; её прогноз нельзя использовать как подтверждённый технический диагноз.</p></div>
-        </section>
-      </div>
+      <section className="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(260px,0.72fr)]">
+        <Link to="/history" className="autofix-panel group flex min-h-36 items-center gap-4 p-5 transition-colors hover:border-primary/40 sm:p-6"><span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-border bg-surface-2 text-primary"><ClipboardList className="size-5"/></span><span className="min-w-0 flex-1"><span className="block text-lg font-semibold">История проверок</span><span className="mt-1 block text-sm leading-5 text-muted">Возвращайтесь к сохранённым результатам диагностики.</span></span><ArrowUpRight className="size-5 shrink-0 text-muted transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary"/></Link>
+        <Link to="/research" className="group flex min-h-36 items-center gap-4 rounded-2xl border border-border bg-surface/60 p-5 transition-colors hover:border-primary/40 sm:p-6"><span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-border bg-bg text-primary"><FlaskConical className="size-5"/></span><span className="min-w-0 flex-1"><span className="block text-lg font-semibold">Методика проекта</span><span className="mt-1 block text-sm leading-5 text-muted">Алгоритмы, метрики и ограничения модели.</span></span><ArrowUpRight className="size-5 shrink-0 text-muted transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary"/></Link>
+      </section>
+
+      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/[0.045] p-4 sm:p-5"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-primary"/><p className="text-xs leading-5 text-muted sm:text-sm">AutoFix — исследовательский прототип. Результат помогает структурировать симптомы, но не заменяет осмотр автомобиля и заключение автомеханика.</p></div>
+      {!isPending && !user ? <div className="mt-5 text-center"><Link to="/login" className="inline-flex"><Button variant="outline" className="rounded-xl">Создать личный аккаунт<ArrowRight className="size-4"/></Button></Link></div> : null}
     </div>
   );
 }
 
-function Feature({ icon: Icon, title, label, text }: { icon: typeof Activity; title: string; label: string; text: string }) {
-  return <div className="flex gap-3 py-4"><Icon className="mt-0.5 size-4 shrink-0 text-primary"/><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h4 className="text-sm font-medium">{title}</h4><span className="font-mono text-[10px] text-muted">{label}</span></div><p className="mt-1 text-sm leading-5 text-muted">{text}</p></div></div>;
+function Metric({ icon: Icon, label, value }: { icon: typeof Activity; label: string; value: number | undefined | null }) {
+  return <div className="rounded-2xl border border-border/80 bg-surface/70 p-4 sm:p-5"><div className="flex items-center gap-2 text-xs text-muted"><Icon className="size-4 text-primary"/>{label}</div><div className="mt-3 font-display text-3xl font-semibold tracking-tight text-fg">{value === undefined ? <span className="inline-block h-8 w-10 animate-pulse rounded bg-surface-2 align-middle"/> : value ?? "—"}</div></div>;
+}
+
+function FeatureCard({ icon: Icon, number, title, text, to, action }: { icon: typeof Activity; number: string; title: string; text: string; to: "/diagnose" | "/cars" | "/maintenance"; action: string }) {
+  return <Link to={to} className="autofix-panel group flex min-h-60 flex-col p-5 transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 sm:p-6"><div className="flex items-start justify-between"><span className="grid size-11 place-items-center rounded-2xl border border-primary/20 bg-primary/10 text-primary"><Icon className="size-5"/></span><span className="font-mono text-xs text-muted">{number}</span></div><h3 className="mt-6 text-xl font-semibold tracking-tight">{title}</h3><p className="mt-2 flex-1 text-sm leading-6 text-muted">{text}</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary">{action}<ArrowRight className="size-4 transition-transform group-hover:translate-x-1"/></span></Link>;
 }
