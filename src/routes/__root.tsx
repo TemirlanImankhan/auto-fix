@@ -2,6 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { AppLayout } from "@/components/layout";
+import { SettingsProvider } from "@/lib/settings";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "AutoFix AI";
@@ -40,9 +41,11 @@ export const Route = createRootRoute({
       <body>
         <PreviewHostBridge />
         <AuthProvider>
-          <AppLayout>
-            <Outlet />
-          </AppLayout>
+          <SettingsProvider>
+            <AppLayout>
+              <Outlet />
+            </AppLayout>
+          </SettingsProvider>
         </AuthProvider>
         <Scripts />
       </body>

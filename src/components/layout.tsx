@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AssistantWidget } from "@/components/assistant-widget";
+import { useSettings } from "@/lib/settings";
 
 const NAV = [
   { to: "/", label: "Обзор", icon: Wrench },
@@ -19,6 +20,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const { user, isPending } = useCurrentUserState();
+  const { settings } = useSettings();
 
   return (
     <div className="min-h-dvh flex flex-col">
@@ -57,7 +59,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </nav> : null}
       </header>
       <main className="flex-1">{children}</main>
-      <AssistantWidget />
+      {settings.showAssistant ? <AssistantWidget /> : null}
       <footer className="border-t border-border/80 px-4 py-6 text-center text-xs text-muted">
         <span className="font-semibold text-fg">AutoFix<span className="text-primary">.</span></span> · цифровой помощник владельца автомобиля · <Link to="/about" className="text-primary hover:underline">О проекте</Link> · 2026
       </footer>

@@ -19,6 +19,21 @@
   --radius-lg: 1.25rem;
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f3f5f0;
+  --color-surface: #ffffff;
+  --color-surface-2: #e8eee6;
+  --color-fg: #18231d;
+  --color-muted: #617168;
+  --color-primary: #456b1c;
+  --color-primary-fg: #ffffff;
+  --color-border: #d5dfd7;
+  --color-ok: #3f762b;
+  --color-danger: #b9362d;
+  --color-ring: #456b1c;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
@@ -35,6 +50,9 @@
   body {
     font-family: var(--font-sans);
     background-image: radial-gradient(ellipse at 50% -24rem, rgb(137 190 83 / 10%), transparent 55%);
+  }
+  :root[data-theme="light"] body {
+    background-image: radial-gradient(ellipse at 50% -24rem, rgb(137 190 83 / 9%), transparent 55%);
   }
   h1,
   h2,

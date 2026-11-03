@@ -4,6 +4,7 @@ import { GROK_PROVIDERS, authEnabled, signIn, signOut } from "./client";
 import { hasGateSessionMarker } from "./gate-session-marker";
 import { resolveSignInGateState } from "./sign-in-gate";
 import { useCurrentUser, useCurrentUserState } from "./use-current-user";
+import { Settings2 } from "lucide-react";
 
 const subscribeToNothing = () => () => {};
 const noGateSessionOnServer = () => false;
@@ -113,6 +114,7 @@ export function UserButton() {
         </span>
       )}
       <Link to="/account" aria-label="Открыть личный кабинет" className="max-w-40 truncate text-sm font-medium text-fg hover:text-primary">{label}</Link>
+      <Link to="/settings" aria-label="Настройки" title="Настройки" className="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-primary"><Settings2 className="size-4"/></Link>
       {authEnabled && !gateSession && (
         <button
           type="button"

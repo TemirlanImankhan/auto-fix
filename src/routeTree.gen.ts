@@ -19,6 +19,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as ResearchRouteImport } from './routes/research'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TwoFactorRouteImport } from './routes/two-factor'
 import { Route as ResultIdRouteImport } from './routes/result.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -73,6 +74,11 @@ const ResearchRoute = ResearchRouteImport.update({
   path: '/research',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TwoFactorRoute = TwoFactorRouteImport.update({
   id: '/two-factor',
   path: '/two-factor',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/research': typeof ResearchRoute
+  '/settings': typeof SettingsRoute
   '/two-factor': typeof TwoFactorRoute
   '/result/$id': typeof ResultIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/research': typeof ResearchRoute
+  '/settings': typeof SettingsRoute
   '/two-factor': typeof TwoFactorRoute
   '/result/$id': typeof ResultIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/research': typeof ResearchRoute
+  '/settings': typeof SettingsRoute
   '/two-factor': typeof TwoFactorRoute
   '/result/$id': typeof ResultIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/research'
+    | '/settings'
     | '/two-factor'
     | '/result/$id'
     | '/api/auth/$'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/research'
+    | '/settings'
     | '/two-factor'
     | '/result/$id'
     | '/api/auth/$'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/research'
+    | '/settings'
     | '/two-factor'
     | '/result/$id'
     | '/api/auth/$'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MaintenanceRoute: typeof MaintenanceRoute
   ResearchRoute: typeof ResearchRoute
+  SettingsRoute: typeof SettingsRoute
   TwoFactorRoute: typeof TwoFactorRoute
   ResultIdRoute: typeof ResultIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/two-factor': {
       id: '/two-factor'
       path: '/two-factor'
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MaintenanceRoute: MaintenanceRoute,
   ResearchRoute: ResearchRoute,
+  SettingsRoute: SettingsRoute,
   TwoFactorRoute: TwoFactorRoute,
   ResultIdRoute: ResultIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
