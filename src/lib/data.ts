@@ -74,6 +74,7 @@ const diagnosisInput = carInput.extend({
   oilPressureWarning: z.boolean(),
   fuelSmell: z.boolean(),
   brakeWarning: z.boolean(),
+  obdCodes: z.array(z.string().regex(/^[PBCU][0-3][0-9A-F]{3}$/i, "Неверный формат OBD-II кода")).max(10).default([]),
 });
 
 const carIdInput = z.number().int().positive();

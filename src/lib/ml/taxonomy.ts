@@ -111,7 +111,7 @@ export type CarInput = {
 
 export type SymptomMap = Record<SymptomId, boolean>;
 
-export type DiagnosisInput = CarInput & SymptomMap;
+export type DiagnosisInput = CarInput & SymptomMap & { obdCodes?: string[] };
 
 export function faultById(id: string) {
   return FAULTS.find((f) => f.id === id) ?? FAULTS[6];
