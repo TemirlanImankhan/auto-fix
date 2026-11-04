@@ -83,8 +83,8 @@ export function AssistantWidget() {
     const answer = getAnswer(question);
     setMessages((current) => [
       ...current,
-      { id, role: "user", text: question },
-      { id: id + 1, role: "assistant", ...answer },
+      { id, role: "user" as const, text: question },
+      { id: id + 1, role: "assistant" as const, ...answer },
     ].slice(-60));
     setDraft("");
   }
