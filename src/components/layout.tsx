@@ -8,14 +8,13 @@ import { AssistantWidget } from "@/components/assistant-widget";
 import { useSettings } from "@/lib/settings";
 
 const NAV = {
-  ru: ["Обзор", "Диагностика", "Автомобили", "Обслуживание", "История", "Исследование", "Сервисы"],
-  kk: ["Шолу", "Диагностика", "Көліктер", "Қызмет көрсету", "Тарих", "Зерттеу", "Қызметтер"],
-  en: ["Overview", "Diagnostics", "Cars", "Maintenance", "History", "Research", "Services"],
+  ru: ["Обзор", "Диагностика", "Автомобили", "Обслуживание", "История", "Исследование"],
+  kk: ["Шолу", "Диагностика", "Көліктер", "Қызмет көрсету", "Тарих", "Зерттеу"],
+  en: ["Overview", "Diagnostics", "Cars", "Maintenance", "History", "Research"],
 } as const;
 const NAV_ITEMS = [
   { to: "/", icon: Wrench }, { to: "/diagnose", icon: Activity }, { to: "/cars", icon: CarFront },
   { to: "/maintenance", icon: CalendarClock }, { to: "/history", icon: ClipboardList }, { to: "/research", icon: FlaskConical },
-  { to: "/services", icon: MapPinned },
 ] as const;
 
 export function AppLayout({ children }: { children: ReactNode }) {
@@ -63,6 +62,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </nav> : null}
       </header>
       <main className="flex-1">{children}</main>
+      <Link to="/services" aria-label={settings.language === "en" ? "Nearby services and map" : settings.language === "kk" ? "Жақын сервистер картасы" : "Карта и автосервисы рядом"} title={settings.language === "en" ? "Nearby services" : settings.language === "kk" ? "Жақын сервистер" : "Автосервисы рядом"} className="fixed bottom-4 left-4 z-50 grid size-11 place-items-center rounded-full border border-border bg-surface text-primary shadow-lg transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-surface-2 sm:bottom-6 sm:left-6">
+        <MapPinned className="size-5"/>
+      </Link>
       {settings.showAssistant ? <AssistantWidget /> : null}
       <footer className="border-t border-border/80 px-4 py-6 text-center text-xs text-muted">
         <span className="font-semibold text-fg">AutoFix<span className="text-primary">.</span></span> · {settings.language === "en" ? "Digital car ownership assistant" : settings.language === "kk" ? "Көлік иесіне арналған цифрлық көмекші" : "цифровой помощник владельца автомобиля"} · <Link to="/about" className="text-primary hover:underline">{settings.language === "en" ? "About" : settings.language === "kk" ? "Жоба туралы" : "О проекте"}</Link> · 2026
