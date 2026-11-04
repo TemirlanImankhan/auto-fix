@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Activity, CalendarClock, CarFront, ClipboardList, FlaskConical, MapPinned, Menu, Wrench, X } from "lucide-react";
+import { Activity, CalendarClock, CarFront, ClipboardList, Download, FlaskConical, MapPinned, Menu, Wrench, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/lib/auth/gates";
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/", icon: Wrench }, { to: "/diagnose", icon: Activity }, { to: "/cars", icon: CarFront },
   { to: "/maintenance", icon: CalendarClock }, { to: "/history", icon: ClipboardList }, { to: "/research", icon: FlaskConical },
 ] as const;
+const WINDOWS_DOWNLOAD_URL = "https://github.com/TemirlanImankhan/auto-fix/releases/latest/download/AutoFix-Setup.exe";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -52,12 +53,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Link to="/login" className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-medium text-fg transition-colors hover:border-primary/60 hover:bg-surface">{signInLabel}</Link>
             )}
           </div>
+          <a href={WINDOWS_DOWNLOAD_URL} className="hidden min-h-10 items-center gap-2 rounded-lg bg-primary px-3 text-sm font-semibold text-primary-fg transition-colors hover:bg-primary/90 md:inline-flex">
+            <Download className="size-4" />Скачать
+          </a>
           <button type="button" className="grid size-10 place-items-center rounded-xl border border-border bg-surface text-fg xl:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
         {open ? <nav className="grid gap-1 border-t border-border bg-bg px-3 py-3 xl:hidden">
           {NAV_ITEMS.map((item, index) => <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-fg hover:bg-surface"><item.icon className="size-4 text-primary" />{labels[index]}</Link>)}
+          <a href={WINDOWS_DOWNLOAD_URL} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-primary hover:bg-surface"><Download className="size-4" />Скачать AutoFix для Windows</a>
           <div className="border-t border-border pt-2">{isPending ? null : user ? <UserButton /> : <Link to="/login" onClick={() => setOpen(false)} className="flex min-h-11 items-center px-3 text-sm text-fg">{signInLabel}</Link>}</div>
         </nav> : null}
       </header>

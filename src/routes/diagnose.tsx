@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AlertTriangle, CarFront, CircleHelp } from "lucide-react";
+import { AlertTriangle, Cable, CarFront, CircleHelp, LoaderCircle } from "lucide-react";
 import { BRANDS, ENGINE_TYPES, SYMPTOMS, type DiagnosisInput, type EngineType, type SymptomId, type SymptomMap } from "@/lib/ml/taxonomy";
 import { lookupObdCode, parseObdCodeText } from "@/lib/ml/obd";
+import { scanElm327 } from "@/lib/ml/elm327";
 import { createDiagnosis, listCars, type StoredCar } from "@/lib/data";
 import { ProtectedPage } from "@/components/protected-page";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,8 @@ function DiagnosePage() {
   const [engineType, setEngineType] = useState<EngineType>("petrol");
   const [symptoms, setSymptoms] = useState<SymptomMap>(blankSymptoms);
   const [obdCodeText, setObdCodeText] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [scanMessage, setScanMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => { void listCars().then((rows) => setCars(rows)).catch((cause: unknown) => setError(cause instanceof Error ? cause.message : "Не удалось загрузить гараж")); }, []);
@@ -28,6 +31,20 @@ function DiagnosePage() {
     setCarId(value);
     const car = cars.find((item) => String(item.id) === value);
     if (car) { setBrand(car.brand); setModel(car.model); setYear(car.year); setMileage(car.mileage); setEngineType(car.engineType); }
+  }
+  async function scanAdapter() {
+    setScanning(true);
+    setScanMessage("");
+    setError("");
+    try {
+      const codes = await scanElm327();
+      setObdCodeText(codes.join(", "));
+      setScanMessage(codes.length ? `Считано кодов: ${codes.length}. Проверьте их ниже перед анализом.` : "Активных кодов неисправностей не найдено.");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Не удалось считать данные адаптера");
+    } finally {
+      setScanning(false);
+    }
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,7 +77,15 @@ function DiagnosePage() {
         </section>
         <section className="rounded-lg border border-border bg-surface p-4 md:p-5">
           <h2 className="font-medium">Коды OBD-II (по желанию)</h2>
-          <p className="mt-1 text-sm leading-5 text-muted">Считайте коды сканером и введите их через запятую или пробел. AutoFix распознаёт распространённые стандартные коды; приложение не подключается к адаптеру напрямую.</p>
+          <p className="mt-1 text-sm leading-5 text-muted">Подключите USB-адаптер ELM327 и считайте коды автоматически либо введите их вручную. Нужен Chrome/Edge или приложение AutoFix для Windows.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button type="button" variant="outline" disabled={scanning} onClick={() => void scanAdapter()}>
+              {scanning ? <LoaderCircle className="size-4 animate-spin" /> : <Cable className="size-4" />}
+              {scanning ? "Считываем коды…" : "Подключить ELM327 по USB"}
+            </Button>
+            <span className="text-xs leading-5 text-muted">Остановите автомобиль, включите зажигание и разрешите доступ к USB-порту.</span>
+          </div>
+          {scanMessage ? <p role="status" className="mt-3 rounded-md border border-primary/25 bg-primary/5 p-3 text-sm text-fg">{scanMessage}</p> : null}
           <label className="mt-4 block text-sm text-muted" htmlFor="obd-codes">Коды неисправностей
             <input id="obd-codes" value={obdCodeText} onChange={(event) => setObdCodeText(event.target.value)} placeholder="Например: P0300, P0420" autoCapitalize="characters" className="mt-1 min-h-11 w-full rounded-md border border-border bg-bg px-3 font-mono text-fg placeholder:font-sans placeholder:text-muted/70" />
           </label>
