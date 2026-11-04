@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Activity, CalendarClock, CarFront, ClipboardList, FlaskConical, Menu, Wrench, X } from "lucide-react";
+import { Activity, CalendarClock, CarFront, ClipboardList, FlaskConical, MapPinned, Menu, Wrench, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/lib/auth/gates";
@@ -8,13 +8,14 @@ import { AssistantWidget } from "@/components/assistant-widget";
 import { useSettings } from "@/lib/settings";
 
 const NAV = {
-  ru: ["Обзор", "Диагностика", "Автомобили", "Обслуживание", "История", "Исследование"],
-  kk: ["Шолу", "Диагностика", "Көліктер", "Қызмет көрсету", "Тарих", "Зерттеу"],
-  en: ["Overview", "Diagnostics", "Cars", "Maintenance", "History", "Research"],
+  ru: ["Обзор", "Диагностика", "Автомобили", "Обслуживание", "История", "Исследование", "Сервисы"],
+  kk: ["Шолу", "Диагностика", "Көліктер", "Қызмет көрсету", "Тарих", "Зерттеу", "Қызметтер"],
+  en: ["Overview", "Diagnostics", "Cars", "Maintenance", "History", "Research", "Services"],
 } as const;
 const NAV_ITEMS = [
   { to: "/", icon: Wrench }, { to: "/diagnose", icon: Activity }, { to: "/cars", icon: CarFront },
   { to: "/maintenance", icon: CalendarClock }, { to: "/history", icon: ClipboardList }, { to: "/research", icon: FlaskConical },
+  { to: "/services", icon: MapPinned },
 ] as const;
 
 export function AppLayout({ children }: { children: ReactNode }) {
@@ -34,7 +35,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <span className="font-display text-xl font-semibold tracking-tight text-fg">AutoFix<span className="text-primary">.</span></span>
             <span className="hidden rounded-full border border-border px-2.5 py-1 text-[9px] font-semibold tracking-[0.16em] text-muted sm:inline-flex">CAR CARE</span>
           </Link>
-          <nav className="hidden lg:flex items-center gap-1 rounded-xl border border-border/70 bg-surface/70 p-1">
+          <nav className="hidden xl:flex items-center gap-1 rounded-xl border border-border/70 bg-surface/70 p-1">
             {NAV_ITEMS.map((item, index) => {
               const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
               return (
@@ -52,11 +53,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Link to="/login" className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-medium text-fg transition-colors hover:border-primary/60 hover:bg-surface">{signInLabel}</Link>
             )}
           </div>
-          <button type="button" className="grid size-10 place-items-center rounded-xl border border-border bg-surface text-fg lg:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
+          <button type="button" className="grid size-10 place-items-center rounded-xl border border-border bg-surface text-fg xl:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Закрыть меню" : "Открыть меню"}>
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
-        {open ? <nav className="grid gap-1 border-t border-border bg-bg px-3 py-3 lg:hidden">
+        {open ? <nav className="grid gap-1 border-t border-border bg-bg px-3 py-3 xl:hidden">
           {NAV_ITEMS.map((item, index) => <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-fg hover:bg-surface"><item.icon className="size-4 text-primary" />{labels[index]}</Link>)}
           <div className="border-t border-border pt-2">{isPending ? null : user ? <UserButton /> : <Link to="/login" onClick={() => setOpen(false)} className="flex min-h-11 items-center px-3 text-sm text-fg">{signInLabel}</Link>}</div>
         </nav> : null}
